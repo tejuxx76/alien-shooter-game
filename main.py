@@ -4,7 +4,7 @@ import random
 pygame.init()
 
 # Screen (FIXED SIZE)
-WIDTH, HEIGHT = 600, 400
+WIDTH, HEIGHT = 500, 400
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Alien Shooter 🚀")
 
@@ -32,11 +32,21 @@ bullet_img = pygame.transform.scale(bullet_img, (10, 20))
 
 # Sounds
 try:
-    shoot_sound = pygame.mixer.Sound("shoot.wav")
-    hit_sound = pygame.mixer.Sound("explosion.wav")
+    start_sound = pygame.mixer.Sound("gamestart.mp3")
+    shoot_sound = pygame.mixer.Sound("laser.mp3")
+    hit_sound = pygame.mixer.Sound("explosion.mp3")
+    game_over_sound = pygame.mixer.Sound("gameover.mp3")
+
+    start_sound.set_volume(0.5)
+    shoot_sound.set_volume(0.4)
+    hit_sound.set_volume(0.5)
+    game_over_sound.set_volume(0.5)
+
 except:
+    start_sound = None
     shoot_sound = None
     hit_sound = None
+    game_over_sound = None
 
 # Stars
 stars = [[random.randint(0, WIDTH), random.randint(0, HEIGHT)] for _ in range(40)]
@@ -51,7 +61,7 @@ player_y = HEIGHT - 70
 player_speed = 5
 lives = 3
 
-# SINGLE Enemy ✅
+# SINGLE Enemy
 enemy_x = random.randint(0, WIDTH - 50)
 enemy_y = 50
 enemy_speed = 2
@@ -97,6 +107,7 @@ def draw_stars():
     for star in stars:
         pygame.draw.circle(screen, WHITE, star, 2)
         star[1] += 1
+
         if star[1] > HEIGHT:
             star[0] = random.randint(0, WIDTH)
             star[1] = 0
@@ -121,7 +132,11 @@ def is_collision(ex, ey, bx, by):
 
 
 def show_info():
-    text = font.render(f"Score: {score}   Level: {level}   Lives: {lives}", True, WHITE)
+    text = font.render(
+        f"Score: {score}   Level: {level}   Lives: {lives}",
+        True,
+        WHITE
+    )
     screen.blit(text, (10, 10))
 
 
@@ -134,91 +149,153 @@ while running:
     mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             running = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
+
+            # START BUTTON
             if game_state == START:
                 if start_btn.collidepoint(mouse_pos):
+
+                    if start_sound:
+                        start_sound.play()
+
                     game_state = PLAYING
 
+            # RESTART BUTTON
             elif game_state == GAME_OVER:
                 if restart_btn.collidepoint(mouse_pos):
+
+                    if start_sound:
+                        start_sound.play()
+
                     reset_game()
                     game_state = PLAYING
 
     # ================= START SCREEN =================
     if game_state == START:
-        title = big_font.render("Alien Shooter", True, WHITE)
-        screen.blit(title, (WIDTH//2 - title.get_width()//2, 120))
 
-        start_btn = pygame.Rect(WIDTH//2 - 100, 220, 200, 50)
+        title = big_font.render("Alien Shooter", True, WHITE)
+
+        screen.blit(
+            title,
+            (WIDTH // 2 - title.get_width() // 2, 120)
+        )
+
+        start_btn = pygame.Rect(
+            WIDTH // 2 - 100,
+            220,
+            200,
+            50
+        )
+
         draw_button("START", start_btn)
 
     # ================= GAME PLAY =================
     elif game_state == PLAYING:
 
         keys = pygame.key.get_pressed()
+
         if keys[pygame.K_LEFT] and player_x > 0:
             player_x -= player_speed
+
         if keys[pygame.K_RIGHT] and player_x < WIDTH - 50:
             player_x += player_speed
 
+        # SHOOT BULLET
         if keys[pygame.K_SPACE] and bullet_state == "ready":
+
             bullet_x = player_x
             bullet_y = player_y
+
             fire_bullet(bullet_x, bullet_y)
+
             if shoot_sound:
                 shoot_sound.play()
 
         # Enemy movement
         enemy_y += enemy_speed
 
+        # Enemy missed
         if enemy_y > HEIGHT:
+
             lives -= 1
+
             enemy_x = random.randint(0, WIDTH - 50)
             enemy_y = 50
 
             if lives <= 0:
+
+                if game_over_sound:
+                    game_over_sound.play()
+
                 game_state = GAME_OVER
 
-        # Bullet
+        # Bullet movement
         if bullet_state == "fire":
+
             fire_bullet(bullet_x, bullet_y)
             bullet_y -= bullet_speed
 
         if bullet_y <= 0:
+
             bullet_y = player_y
             bullet_state = "ready"
 
         # Collision
         if is_collision(enemy_x, enemy_y, bullet_x, bullet_y):
+
             score += 1
+
             if hit_sound:
                 hit_sound.play()
 
+            # Increase level every 5 points
             if score % 5 == 0:
                 level += 1
                 enemy_speed += 0.5
 
             enemy_x = random.randint(0, WIDTH - 50)
             enemy_y = 50
+
             bullet_y = player_y
             bullet_state = "ready"
 
         draw_enemy(enemy_x, enemy_y)
         draw_player(player_x, player_y)
+
         show_info()
 
     # ================= GAME OVER =================
     elif game_state == GAME_OVER:
+
         over_text = big_font.render("GAME OVER", True, RED)
-        screen.blit(over_text, (WIDTH//2 - over_text.get_width()//2, 120))
 
-        score_text = font.render(f"Final Score: {score}", True, WHITE)
-        screen.blit(score_text, (WIDTH//2 - score_text.get_width()//2, 200))
+        screen.blit(
+            over_text,
+            (WIDTH // 2 - over_text.get_width() // 2, 120)
+        )
 
-        restart_btn = pygame.Rect(WIDTH//2 - 100, 260, 200, 50)
+        score_text = font.render(
+            f"Final Score: {score}",
+            True,
+            WHITE
+        )
+
+        screen.blit(
+            score_text,
+            (WIDTH // 2 - score_text.get_width() // 2, 200)
+        )
+
+        restart_btn = pygame.Rect(
+            WIDTH // 2 - 100,
+            260,
+            200,
+            50
+        )
+
         draw_button("RESTART", restart_btn)
 
     pygame.display.update()
