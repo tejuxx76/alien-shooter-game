@@ -34,3 +34,14 @@ Run the game:
 python main.py
 ```
 
+## Screenshots
+
+### Start Screen
+![Start Screen](start-screen.png)
+
+### Gameplay
+![Gameplay](gameplay.png)
+
+### Game Over Screen
+![Game Over](game-over.png)
+
