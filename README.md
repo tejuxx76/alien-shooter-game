@@ -37,11 +37,10 @@ python main.py
 ## Screenshots
 
 ### Start Screen
-![Start Screen](start-screen.png)
+![Start Screen](start-screen.jpeg)
 
 ### Gameplay
-![Gameplay](gameplay.png)
+![Gameplay](gameplay.jpeg)
 
 ### Game Over Screen
-![Game Over](game-over.png)
-
+![Game Over](game-over.jpeg)
