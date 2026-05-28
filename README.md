@@ -95,13 +95,3 @@ The game follows a simple 2D shooting logic:
 
 ![Game Over](game-over.jpeg)
 
-## Screenshots
-
-### Start Screen
-![Start Screen](start-screen.jpeg)
-
-### Gameplay
-![Gameplay](gameplay.jpeg)
-
-### Game Over Screen
-![Game Over](game-over.jpeg)
