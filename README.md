@@ -20,20 +20,6 @@ A simple 2D shooting game built using Python and Pygame.
 - Right Arrow → Move Right
 - Spacebar → Shoot
 
-## Run Project
-
-Install pygame:
-
-```bash
-pip install pygame
-```
-
-Run the game:
-
-```bash
-python main.py
-```
-
 ## Screenshots
 
 ### Start Screen
